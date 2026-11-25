@@ -414,6 +414,12 @@ let cur = 0;
 let lang = 'cz';
 let sentOk = false;
 const DRAFT_KEY = 'zion-brand-bible-draft';
+// opened from Zion: ?name=<her model name>&lang=cz|en&embed=1 (name is filled in and locked)
+const URLP = new URLSearchParams(location.search);
+const EMBED = URLP.get('embed') === '1';
+const PRESET_NAME = (URLP.get('name') || '').trim().slice(0, 60);
+if (URLP.get('lang') === 'en') lang = 'en';
+const norm = (s) => String(s || '').trim().toLowerCase();
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 // ---------- building the screens ----------
@@ -622,11 +628,12 @@ async function submitForm(){
     Odpovedi: fullText(d, lang),
     Answers_EN: lang === 'en' ? '' : fullText(d, 'en'),
   };
-  let ok = false;
-  try {
-    const r = await fetch('https://formspree.io/f/mkoadwrq', { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    ok = r.ok;
-  } catch (e) {}
+  // the email copy (Formspree) and Zion get it at the same time; one of them is enough to count as sent
+  const toEmail = fetch('https://formspree.io/f/mkoadwrq', { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then((r) => r.ok).catch(() => false);
+  const toZion = fetch('https://kvwwjyvkoiqsvpyzbcmn.supabase.co/functions/v1/brand-bible', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'submit', name: d.name, lang, source: EMBED ? 'zion' : 'link', items: d.items.map(({ raw, ...it }) => it), content: fullText(d, lang), content_en: lang === 'en' ? '' : fullText(d, 'en') }) }).then((r) => r.ok).catch(() => false);
+  const [okEmail, okZion] = await Promise.all([toEmail, toZion]);
+  const ok = okEmail || okZion;
   if (!ok) {
     btn.textContent = T[lang].finish;
     btn.disabled = false;
@@ -680,7 +687,9 @@ function exportPDF(){
 document.addEventListener('DOMContentLoaded', () => {
   buildScreens();
   const draft = loadDraft();
-  if (draft) { resumeAt = draft.cur || 0; if (draft.lang === 'en') lang = 'en'; }
+  if (draft && (!PRESET_NAME || norm(draft.name) === norm(PRESET_NAME))) { resumeAt = draft.cur || 0; if (draft.lang === 'en' && !URLP.get('lang')) lang = 'en'; }
+  else if (draft && PRESET_NAME) { QUESTIONS.forEach((q) => writeAnswer(q, { text: '', rows: [], picked: [], other: '' })); }
+  if (PRESET_NAME) { const inp = document.getElementById('popup-name'); inp.value = PRESET_NAME; inp.readOnly = true; inp.style.opacity = '.75'; }
   setLang(lang);
   document.getElementById('popup-name').addEventListener('keydown', (e) => { if (e.key === 'Enter') startForm(); });
   document.getElementById('main').addEventListener('input', () => { clearTimeout(window.__sd); window.__sd = setTimeout(saveDraft, 400); });
