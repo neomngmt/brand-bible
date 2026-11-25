@@ -227,6 +227,13 @@
   .popup-logo .zw-by { font-size: 15px; margin-top: 7px; }
   .popup-logo .pl-name { font-family: var(--mono); font-size: 10.5px; letter-spacing: 4px; color: var(--accent-soft); text-transform: uppercase; border: 1px solid var(--border); border-radius: 999px; padding: .25rem .8rem; }
   body.embed .app-header { padding-right: 58px; }
+  /* calmer intro: logo, title, one line, language, name, button */
+  .popup-logo .pl-name, .popup-why { display: none !important; }
+  .popup-logo { margin-bottom: 1.6rem; }
+  .popup-title { font-size: 27px; }
+  .popup-note { max-width: 300px; margin-left: auto; margin-right: auto; margin-bottom: 1.4rem; }
+  .popup-langs .lang-btn { padding: .5rem .3rem; font-size: 13px; }
+  .popup-box { padding: 2.2rem 1.8rem 2rem; }
 </style>
 </head>
 <body>
@@ -396,7 +403,7 @@ const SCREENS = [
 
 const T = {
   cz: {
-    popupTitle: 'Vítej 👋', popupNote: 'Vyber jazyk a napiš nám, jak se jmenuješ.',
+    popupTitle: 'Tvoje Brand Bible', popupNote: 'Zabere asi 15 minut. Čím víc detailů napíšeš, tím víc bude brand tvůj.',
     namePh: 'Tvoje jméno nebo alias...', whyTitle: 'PROČ JE TENTO DOTAZNÍK DŮLEŽITÝ',
     why1: 'Většina modelek na sítích vypadá a zní úplně stejně. Z tvých odpovědí postavíme brand, který bude jen tvůj: tvoje osobnost, zájmy, styl a příběh.',
     why2: 'Odpovídej celými větami a co nejpodrobněji. Čím víc detailů, tím lepší nápady na obsah pro tebe vymyslíme. Rozpracované se ti ukládá.',
@@ -409,7 +416,7 @@ const T = {
     emptyWarn: 'Zatím jsi nic nevyplnila. Opravdu chceš odeslat prázdný dotazník?',
   },
   en: {
-    popupTitle: 'Welcome 👋', popupNote: 'Pick your language and tell us your name.',
+    popupTitle: 'Your Brand Bible', popupNote: 'About 15 minutes. The more detail you give, the more the brand is yours.',
     namePh: 'Your name or alias...', whyTitle: 'WHY THIS QUESTIONNAIRE MATTERS',
     why1: 'Most creators online look and sound exactly the same. From your answers we build a brand that is only yours: your personality, interests, style and story.',
     why2: 'Please answer in full sentences and give as much detail as possible. The more detail, the better the content ideas we create for you. Your progress is saved.',
